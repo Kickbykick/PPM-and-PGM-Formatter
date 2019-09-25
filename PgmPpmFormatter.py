@@ -1,0 +1,94 @@
+import numpy as np
+# import matplotlib.pyplot as plt
+
+DarkRange = 50
+
+def main():
+    data = readpgm('Kit-Kat.pgm')
+    writePGMFile(data)
+
+def readpgm(fileName):
+    with open(fileName) as pgmFile:
+        lines = pgmFile.readlines()
+
+    for l in list(lines):
+        if l[0] == '#':
+            lines.remove(l)
+
+    assert lines[0].strip() == 'P2' 
+
+    #list
+    data = []
+    for line in lines[1:]:
+        data.extend([int(c) for c in line.split()])
+
+    return (np.array(data[3:]),(data[1],data[0]),data[2])
+
+def writePGMFile(data):
+    rangeNum = 255 / DarkRange
+    count = 0
+    newData = np.reshape(data[0],data[1])
+    
+    blackWhiteArray = np.copy(newData)
+    darkerArray = np.copy(newData)
+    brighterArray = np.copy(newData)
+    tdCopy = np.copy(newData)
+    lrCopy = np.copy(newData)
+
+    #Create New PGM files - Inverted Black and White, Left Right, Top Bottom, Bright and Dark.
+    ########################################################################
+    print "Inverting Black and White - PGM..............\n"
+    blkWhtFile = open("BlackWhite_Invert-Kat.pgm","w")
+    blkWhtFile.write("P2\n")
+    blkWhtFile.write("1770 1170\n")
+    blkWhtFile.write("255\n")
+    for x in np.nditer(blackWhiteArray, op_flags = ['readwrite']):
+        x[...] =  255 - x
+
+    np.savetxt(blkWhtFile, blackWhiteArray, fmt="%s")  
+    ########################################################################
+    
+    print "Reflecting Left to Right - PGM..............\n"
+    ltRtFile = open("LeftRight-Kat.pgm","w")
+    ltRtFile.write("P2\n")
+    ltRtFile.write("1770 1170\n")
+    ltRtFile.write("255\n")
+    leftRightReverse = lrCopy[::, ::-1]
+
+    np.savetxt(ltRtFile, leftRightReverse, fmt="%s")  
+    ########################################################################
+
+    print "Reflecting Top to Bottom - PGM..............\n"
+    tdBtFile = open("TopBottom-Kat.pgm","w")
+    tdBtFile.write("P2\n")
+    tdBtFile.write("1770 1170\n")
+    tdBtFile.write("255\n")
+    topDownReverse = tdCopy[::-1]
+
+    np.savetxt(tdBtFile, topDownReverse, fmt="%s")  
+    ########################################################################
+
+    print "Increasing Brightness of Image - PGM..............\n"
+    brightFile = open("Bright-Kat.pgm","w")
+    brightFile.write("P2\n")
+    brightFile.write("1770 1170\n")
+    brightFile.write("400\n")
+    for x in np.nditer(brighterArray, op_flags = ['readwrite']):
+        x[...] =  (x + 150)
+
+    np.savetxt(brightFile, brighterArray, fmt="%s")  
+    ########################################################################
+
+    print "Darkening Image - PGM..............\n"
+    darkFile = open("Darken-Kat.pgm","w")
+    darkFile.write("P2\n")
+    darkFile.write("1770 1170\n")
+    darkFile.write("255\n")
+    for x in np.nditer(darkerArray, op_flags = ['readwrite']):
+        x[...] =  (x / rangeNum)
+
+    np.savetxt(darkFile, darkerArray, fmt="%s")  
+    ########################################################################
+
+if __name__== "__main__":
+    main()
