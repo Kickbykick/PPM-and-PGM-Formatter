@@ -10,19 +10,22 @@ def main():
 def readpgm(fileName):
     with open(fileName) as pgmFile:
         lines = pgmFile.readlines()
+    
+    assert lines[0].strip() == 'P2' 
 
+    #Ignoring Comments
     for l in list(lines):
         if l[0] == '#':
             lines.remove(l)
-
-    assert lines[0].strip() == 'P2' 
 
     #list
     data = []
     for line in lines[1:]:
         data.extend([int(c) for c in line.split()])
 
-    return (np.array(data[3:]),(data[1],data[0]),data[2])
+    resultMulti = (np.array(data[3:]),(data[1],data[0]),data[2])
+
+    return resultMulti
 
 def writePGMFile(data):
     rangeNum = 255 / DarkRange
