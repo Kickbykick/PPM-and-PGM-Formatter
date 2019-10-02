@@ -9,28 +9,28 @@ def main():
 
 def readpgm(fileName):
     with open(fileName) as pgmFile:
-        lines = pgmFile.readlines()
+        allLines = pgmFile.readlines()
     
-    assert lines[0].strip() == 'P2' 
+    assert allLines[0].strip() == 'P2' 
 
     #Ignoring Comments
-    for l in list(lines):
-        if l[0] == '#':
-            lines.remove(l)
+    for str_line in list(allLines): #Turn Lines into a list and check for any string that starts with # and remove it
+        if str_line[0] == '#':
+            allLines.remove(str_line)
 
     #list
-    data = []
-    for line in lines[1:]:
-        data.extend([int(c) for c in line.split()])
+    data_list = []
+    for line in allLines[1:]:
+        data_list.extend([int(i) for i in line.split()])
 
-    resultMulti = (np.array(data[3:]),(data[1],data[0]),data[2])
+    resultMulti = (np.array(data_list[3:]),(data_list[1],data_list[0]),data_list[2])
 
     return resultMulti
 
 def writePGMFile(data):
     rangeNum = 255 / DarkRange
     count = 0
-    newData = np.reshape(data[0],data[1])
+    newData = np.reshape(data[0],data[1]) #Reshape the list of numbers using the provided row and colums
     
     blackWhiteArray = np.copy(newData)
     darkerArray = np.copy(newData)
